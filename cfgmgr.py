@@ -33,11 +33,14 @@ class ConfigCreator:
 		self.config_name = config_name
 		self.config_location = configuration_dirs + "/" + config_name
 		self.init_command = "git init --bare " + self.config_location
+		self.hide_untracked_command = "git --git-dir='" + self.config_location + "' --work-tree='" + home_dir + "' config --local status.showUntrackedFiles no"
 
 	def run(self):
 		if(os.path.isdir(self.config_location)):
 			raise RuntimeError("Configuration '" + self.config_name + "' already exists")
 		os.system(self.init_command)
+		os.chdir(self.config_location)
+		os.system(self.hide_untracked_command)
 
 class ConfigCloner:
 	def __init__(self, config_name, remote):
@@ -45,11 +48,14 @@ class ConfigCloner:
 		self.remote = remote
 		self.config_path = configuration_dirs + "/" + self.config_name
 		self.clone_command = "git clone --bare " + self.remote + " '" + self.config_path + "'"
+		self.hide_untracked_command = "git --git-dir='" + self.config_location + "/" + self.config_name + "' --work-tree='" + home_dir + "' config --local status.showUntrackedFiles no"
 
 	def run(self):
 		if(os.path.isdir(self.config_path)):
 			raise RuntimeError("Configuration '" + self.config_name + "' already exists")
 		os.system(self.clone_command)
+		os.chdir(self.config_location)
+		os.system(self.hide_untracked_command)
 
 class ConfigUpdator:
 	def __init__(self, config_name, git_command):
@@ -96,7 +102,11 @@ def parse_command():
 		raise RuntimeError(usage)
 	else:
 		config_name = sys.argv[1]
-		git_command = " ".join(sys.argv[2:])
+		commands = sys.argv[2:]
+		# add quotes around each command, else the shell will misinterpret them
+		for i in range(len(commands)):
+			commands[i] = "'" + commands[i] + "'"
+		git_command = " ".join(commands)
 		return ConfigUpdator(config_name, git_command)
 
 def main():
