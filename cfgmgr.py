@@ -6,10 +6,10 @@ import os.path
 
 # script usage
 usage = """Usage:
-cfgmgr --new <name>
-cfgmgr --list
-cfgmgr --clone <alias> <repo>
-cfgmger <name> <git command>"""
+cfgmgr new <alias>
+cfgmgr list
+cfgmgr clone <alias> <repo>
+cfgmger manage <alias> <git command>"""
 
 # Global variables for paths
 home_dir = os.path.expanduser("~")
@@ -72,42 +72,38 @@ def parse_command():
 	if(len(sys.argv) < 2):
 		raise RuntimeError(usage)
 
-	# ================================ Options =================================
-	if sys.argv[1] == "--list":
+	if sys.argv[1] == "list":
 		if len(sys.argv) != 2:
 			raise RuntimeError(usage)
 		else:
 			return ConfigLister()
 
-	if sys.argv[1] == "--new":
+	if sys.argv[1] == "new":
 		if len(sys.argv) != 3:
 			raise RuntimeError(usage)
 		else:
 			return ConfigCreator(sys.argv[2])
 
-	if sys.argv[1] == "--clone":
+	if sys.argv[1] == "clone":
 		if len(sys.argv) != 4:
 			raise RuntimeError(usage)
 		else:
 			return ConfigCloner(sys.argv[2], sys.argv[3])
 
-	# Invalid option
-	if sys.argv[1].startswith('-'):
-		option = sys.argv[1]
-		msg = "Unknown option: '" + option + "'"
-		raise RuntimeError(msg + "\n" + usage)
+	if sys.argv[1] == "manage":
+		if len(sys.argv) < 4:
+			raise RuntimeError(usage)
+		else:
+			config_name = sys.argv[2]
+			commands = sys.argv[3:]
+			# add quotes around each command, else the shell will misinterpret
+			# them
+			for i in range(len(commands)):
+				commands[i] = "'" + commands[i] + "'"
+			git_command = " ".join(commands)
+			return ConfigUpdator(config_name, git_command)
 
-	# ================================== Git ===================================
-	if len(sys.argv) < 3:
-		raise RuntimeError(usage)
-	else:
-		config_name = sys.argv[1]
-		commands = sys.argv[2:]
-		# add quotes around each command, else the shell will misinterpret them
-		for i in range(len(commands)):
-			commands[i] = "'" + commands[i] + "'"
-		git_command = " ".join(commands)
-		return ConfigUpdator(config_name, git_command)
+	raise RuntimeError(usage)
 
 def main():
 	try:
