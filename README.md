@@ -66,5 +66,10 @@ Now, make any changes, add them and push them using commands of the form:
 Installation
 ================================================================================
 
-Put `cfgmgr` somewhere in your `PATH`. Optionally, for `zsh` tab completion, put
-`_cfgmgr` in your `fpath`.
+A package exists for `ArchLinux`, but is not available on the `AUR`. To install
+it, simply run from the root of the project:
+
+	$ makepkg --install
+
+For non-Arch or local installs, simply put `cfgmgr` somewhere in your `PATH`.
+Optionally, for `zsh` tab completion, put `_cfgmgr` in your `fpath`.
