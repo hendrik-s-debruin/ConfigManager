@@ -1,10 +1,10 @@
 ConfigManager
 ================================================================================
 
-`ConfigManager` is a very simple script to manage dot files on Linux. It is a
+`ConfigManager` is a simple script to manage dot files on Linux. It is a
 thin wrapper around `git`. `ConfigManager` creates a new git repository for each
-program's configuration that you would like to track.
-
+program's configuration that you would like to track. Autocompletion is
+available for the `zsh` shell.
 
 Usage
 --------------------------------------------------------------------------------
@@ -62,3 +62,9 @@ branch for that pc:
 Now, make any changes, add them and push them using commands of the form:
 
 	$ cfgmgr manage vim <command>
+
+Installation
+================================================================================
+
+Put `cfgmgr` somewhere in your `PATH`. Optionally, for `zsh` tab completion, put
+`_cfgmgr` in your `fpath`.

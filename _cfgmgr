@@ -1,0 +1,71 @@
+#compdef _cfgmgr cfgmgr
+
+function _cfgmgr {
+	local line
+
+	function _commands {
+		local -a commands
+		commands=(
+			'new:track a new configuration'
+			'list:list all tracked configurations'
+			'clone:clone an existing configuration'
+			'manage:manage an existing configuration'
+		)
+
+		_describe 'command' commands
+	}
+
+	_arguments -C \
+		"1: :_commands" \
+		"*::arg:->args"
+
+	case $line[1] in
+		new)
+			_cfgmgr_new
+		;;
+		list)
+			_cfgmgr_list
+		;;
+		clone)
+			_cfgmgr_clone
+		;;
+		manage)
+			_cfgmgr_manage
+		;;
+	esac
+}
+
+function _cfgmgr_new() {
+
+}
+
+function _cfgmgr_list() {
+
+}
+
+function _cfgmgr_clone() {
+
+}
+
+function _cfgmgr_manage() {
+	function _configs {
+		local -a commands
+		commands=(
+			$(find ~/.config/cfgmgr/configs -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
+		)
+
+		_describe 'command' commands
+	}
+	_arguments -C \
+		"1: :_configs" \
+		"*::args:->args"
+
+	# TODO rather check if $line[1] is in array
+	if [ "$line[1]" != "manage" ]; then
+		_git_complete
+	fi
+}
+
+function _git_complete() {
+	_dispatch git git
+}
