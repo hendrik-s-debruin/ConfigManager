@@ -46,9 +46,10 @@ class ConfigCloner:
     def __init__(self, config_name, remote):
         self.config_name = config_name
         self.remote = remote
+        self.config_location = configuration_dirs + "/" + config_name
         self.config_path = configuration_dirs + "/" + self.config_name
         self.clone_command = "git clone --bare " + self.remote + " '" + self.config_path + "'"
-        self.hide_untracked_command = "git --git-dir='" + self.config_location + "/" + self.config_name + "' --work-tree='" + home_dir + "' config --local status.showUntrackedFiles no"
+        self.hide_untracked_command = "git --git-dir='" + self.config_location + "' --work-tree='" + home_dir + "' config --local status.showUntrackedFiles no"
 
     def run(self):
         if(os.path.isdir(self.config_path)):
