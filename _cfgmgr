@@ -10,6 +10,7 @@ function _cfgmgr {
 			'list:list all tracked configurations'
 			'clone:clone an existing configuration'
 			'manage:manage an existing configuration'
+			'foreach:run a git command on each existing configuration'
 		)
 
 		_describe 'command' commands
@@ -32,6 +33,9 @@ function _cfgmgr {
 		manage)
 			_cfgmgr_manage
 		;;
+		foreach)
+			_cfgmgr_foreach
+		;;
 	esac
 }
 
@@ -45,6 +49,10 @@ function _cfgmgr_list() {
 
 function _cfgmgr_clone() {
 
+}
+
+function _cfgmgr_foreach () {
+	_dispatch git git
 }
 
 function _cfgmgr_manage() {

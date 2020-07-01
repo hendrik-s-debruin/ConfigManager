@@ -9,7 +9,9 @@ usage = """Usage:
 cfgmgr new <alias>
 cfgmgr list
 cfgmgr clone <alias> <repo>
-cfgmger manage <alias> <git command>"""
+cfgmger manage <alias> <git command>
+cfgmgr foreach <git command>
+"""
 
 # Global variables for paths
 home_dir = os.path.expanduser("~")
@@ -21,9 +23,16 @@ class ConfigLister:
     Lists the configurations that are tracked by cfgmgr
     """
     def run(self):
+        for el in ConfigLister.get_list():
+            print(el)
+
+    @staticmethod
+    def get_list():
+        list = []
         for el in os.listdir(configuration_dirs):
             if(os.path.isdir(configuration_dirs + "/" + el)):
-                print(el)
+                list.append(el)
+        return list
 
 class ConfigCreator:
     """
@@ -69,6 +78,16 @@ class ConfigUpdator:
             raise RuntimeError("Configuration '" + self.config_name + "' does not exist")
         os.system(self.git_command)
 
+class ForeachConfigUpdator:
+    def __init__(self, git_command):
+        self.git_command = git_command
+
+    def run(self):
+        configs = ConfigLister.get_list()
+        for config in configs:
+            updator = ConfigUpdator(config, self.git_command)
+            updator.run()
+
 def parse_command():
     if(len(sys.argv) < 2):
         raise RuntimeError(usage)
@@ -103,6 +122,18 @@ def parse_command():
                 commands[i] = "'" + commands[i] + "'"
             git_command = " ".join(commands)
             return ConfigUpdator(config_name, git_command)
+
+    if sys.argv[1] == "foreach":
+        if len(sys.argv) < 3:
+            raise RuntimeError(usage)
+        else:
+            commands = sys.argv[2:]
+            # add quotes around each command, else the shell will misinterpret
+            # them
+            for i in range(len(commands)):
+                commands[i] = "'" + commands[i] + "'"
+            git_command = " ".join(commands)
+            return ForeachConfigUpdator(git_command)
 
     raise RuntimeError(usage)
 

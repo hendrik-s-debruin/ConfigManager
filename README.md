@@ -35,6 +35,10 @@ command on a program's configuration, simply call:
 Here, `alias` identifies the command, and `git command` is the command you wish
 to run.
 
+To run some git command on all of your tracked configurations, call:
+
+	$ cfgmgr foreach <git command>
+
 Examples
 --------------------------------------------------------------------------------
 
@@ -47,21 +51,31 @@ Your home machine is already configured nicely, so we start the tracking there:
 	$ cfgmgr new vim
 	$ cfgmgr manage vim add ~/.vimrc
 	$ cfgmgr manage vim commit -m "initial commit"
-	$ cfgmgr manage vim add origin https://github.com/hendrik-s-debruin/vim_dots.git
+	$ cfgmgr manage vim add origin https://github.com/hendrik-s-debruin/configuration_vim.git
 	$ cfgmgr manage vim push
 
 Now, you clone this already-existing repository onto your work machine:
 
-	$ cfgmgr clone vim https://github.com/hendrik-s-debruin/vim_dots.git
+	$ cfgmgr clone vim https://github.com/hendrik-s-debruin/configuration_vim.git
 
 Since your work pc needs a slightly different configuration, we create a new
 branch for that pc:
 
 	$ cfgmgr manage vim checkout -b work
 
-Now, make any changes, add them and push them using commands of the form:
+Now, make any changes, add them and push them:
 
-	$ cfgmgr manage vim <command>
+	$ vim .vimrc
+	$ cfgmgr manage vim add .vimrc
+	$ cfgmgr manage vim commit -m "super cool changes"
+	$ cfgmgr manage vim push
+
+During the course of the day you are likely to make multiple changes to multiple
+configuration repositories. When you get back home, you can sync all of them
+again with the `foreach` command:
+
+	$ cfgmgr foreach pull
+
 
 Installation
 ================================================================================
