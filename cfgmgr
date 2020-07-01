@@ -74,8 +74,22 @@ class ConfigUpdator:
         self.git_command = "git --git-dir='" + self.config_location + "' --work-tree='" + home_dir + "' " + git_command
 
     def run(self):
+        # Check this is a tracked configuration
         if(not os.path.isdir(self.config_location)):
             raise RuntimeError("Configuration '" + self.config_name + "' does not exist")
+
+        # Manage the .gitmodules files
+        gitmodules = home_dir + '/.gitmodules'
+        if os.path.islink(gitmodules):
+            link_dest = os.readlink(gitmodules)
+            if not link_dest.startswith(config_location):
+                raise RuntimeError("Error: " + home_dir + "/.gitmodules has destination outside of ConfigManager's repositories")
+            os.remove(gitmodules)
+        elif os.path.isfile(gitmodules):
+            raise RuntimeError("Error: File " + home_dir + "/.gitmodules already exists.")
+        os.symlink(config_location + '/gitmodules.' + self.config_name, home_dir + '/.gitmodules')
+
+        # Run the git command
         os.system(self.git_command)
 
 class ForeachConfigUpdator:
