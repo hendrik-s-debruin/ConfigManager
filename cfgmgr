@@ -107,7 +107,7 @@ class ForeachConfigUpdator:
 
         filler_left = int(filler_length / 2)
         if filler_length % 2 == 0:
-            filler_right = filler_right
+            filler_right = filler_left
         else:
             filler_right = filler_left + 1
 
