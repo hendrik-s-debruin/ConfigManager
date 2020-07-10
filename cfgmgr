@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -95,10 +95,29 @@ class ConfigUpdator:
 class ForeachConfigUpdator:
     def __init__(self, git_command):
         self.git_command = git_command
+        self.term_width = os.get_terminal_size()[0]
+        if self.term_width > 80:
+            self.term_width = 80
+
+    def get_config_header(self, config_name):
+        # +2 for spaces on either side
+        name_length = len(config_name) + 2
+        # the combined size of the "===== <config> =====" borders on either side
+        filler_length = self.term_width - name_length
+
+        filler_left = int(filler_length / 2)
+        if filler_length % 2 == 0:
+            filler_right = filler_right
+        else:
+            filler_right = filler_left + 1
+
+        return (filler_left*"=") + " " + config_name + " " + (filler_right*"=")
+
 
     def run(self):
         configs = ConfigLister.get_list()
         for config in configs:
+            print(self.get_config_header(config))
             updator = ConfigUpdator(config, self.git_command)
             updator.run()
 
