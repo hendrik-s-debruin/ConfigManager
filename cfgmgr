@@ -14,9 +14,27 @@ cfgmgr foreach <git command>
 """
 
 # Global variables for paths
-home_dir = os.path.expanduser("~")
-config_location = home_dir + "/.config/cfgmgr"
+home_dir           = os.path.expanduser("~")
+config_location    = home_dir + "/.config/cfgmgr"
 configuration_dirs = config_location + "/configs"
+
+def LinkReadme(config_name):
+    # Check that regular file ~/README.md does not exist
+    if os.path.isfile(home_dir + "/README.md"):
+        raise RuntimeError("Error: Regular file ~/README.md exists. Remove first")
+
+    # Remove the current link
+    if os.path.islink(home_dir + "/README.md"):
+        # link_target = os.readlink(home_dir + "/README.md")
+        os.remove(home_dir + "/README.md")
+
+    target_readme_dir = config_location + "/README"
+    target_readme = target_readme_dir + "/README." + config_name + ".md"
+    if not os.path.isdir(target_readme_dir):
+        os.mkdir(target_readme_dir)
+
+    # Create the new link
+    os.symlink(target_readme, home_dir + "/README.md")
 
 class ConfigLister:
     """
@@ -45,6 +63,7 @@ class ConfigCreator:
         self.hide_untracked_command = "git --git-dir='" + self.config_location + "' --work-tree='" + home_dir + "' config --local status.showUntrackedFiles no"
 
     def run(self):
+        LinkReadme(self.config_name)
         if(os.path.isdir(self.config_location)):
             raise RuntimeError("Configuration '" + self.config_name + "' already exists")
         os.system(self.init_command)
@@ -61,6 +80,7 @@ class ConfigCloner:
         self.hide_untracked_command = "git --git-dir='" + self.config_location + "' --work-tree='" + home_dir + "' config --local status.showUntrackedFiles no"
 
     def run(self):
+        LinkReadme(self.config_name)
         if(os.path.isdir(self.config_path)):
             raise RuntimeError("Configuration '" + self.config_name + "' already exists")
         os.system(self.clone_command)
@@ -74,6 +94,7 @@ class ConfigUpdator:
         self.git_command = "git --git-dir='" + self.config_location + "' --work-tree='" + home_dir + "' " + git_command
 
     def run(self):
+        LinkReadme(self.config_name)
         # Check this is a tracked configuration
         if(not os.path.isdir(self.config_location)):
             raise RuntimeError("Configuration '" + self.config_name + "' does not exist")
