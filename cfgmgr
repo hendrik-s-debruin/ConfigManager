@@ -20,7 +20,7 @@ configuration_dirs = config_location + "/configs"
 
 def LinkReadme(config_name):
     # Check that regular file ~/README.md does not exist
-    if os.path.isfile(home_dir + "/README.md"):
+    if os.path.isfile(home_dir + "/README.md") and not os.path.islink(home_dir + "/README.md"):
         raise RuntimeError("Error: Regular file ~/README.md exists. Remove first")
 
     # Remove the current link
@@ -29,11 +29,12 @@ def LinkReadme(config_name):
         os.remove(home_dir + "/README.md")
 
     target_readme_dir = config_location + "/README"
-    target_readme = target_readme_dir + "/README." + config_name + ".md"
     if not os.path.isdir(target_readme_dir):
         os.mkdir(target_readme_dir)
 
     # Create the new link
+    target_readme_dir_relative = ".config/cfgmgr/README"
+    target_readme = target_readme_dir_relative + "/README." + config_name + ".md"
     os.symlink(target_readme, home_dir + "/README.md")
 
 class ConfigLister:
